@@ -1,0 +1,8 @@
+﻿@{ 
+    string institutionLogo = Configuration["InstitutionLogo"];
+}
+
+<span class="badge badge-secondary">@ViewBag.timestamp</span>
+<div class="d-flex justify-content-center">
+    <img src="images/@institutionLogo" alt="logo" />
+</div>

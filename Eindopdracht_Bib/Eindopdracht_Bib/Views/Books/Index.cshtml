@@ -1,0 +1,82 @@
+﻿@model BookListViewModel
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["Message"]
+    </div>
+}
+
+<!-- Pagination -->
+<ul class="pagination">
+    @for (int i = 1; i < Model.TotalPages + 1; i++)
+    {
+        <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-sort="@Model.SortField" asp-route-sortDirection="@Model.SortDirection">@i</a></li>
+    }
+</ul>
+
+<!-- Table with all books -->
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col"><a asp-action="Index" asp-route-sort="ISBN" asp-route-sortDirection="@Model.SortDirection">ISBN Nummer</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Title" asp-route-sortDirection="@Model.SortDirection">Titel</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Author" asp-route-sortDirection="@Model.SortDirection">Auteur</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="PublicationYear" asp-route-sortDirection="@Model.SortDirection">Publicatie Jaar</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Type" asp-route-sortDirection="@Model.SortDirection">Type</a></th>
+            <th>
+                <form method="get" asp-action="Index" asp-route-sort="@Model.SortField">
+                    <select asp-for="@Model.SortDirection">
+                        <option value="ASC">ASC</option>
+                        <option value="DESC">DESC</option>
+                    </select>
+                    <button type="submit">Change</button>
+                </form>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Book book in Model.Books)
+        {
+            <tr>
+                <td>@book.ISBN</td>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.PublicationYear</td>
+                <td>@book.Type</td>
+                <td>
+                    <button type="button" data-toggle="modal" data-target="#delete-modal-@book.Id" class="btn btn-labeled btn-danger">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <a asp-action="Update" asp-controller="Books" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-primary">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-controller="Books" asp-action="Create" role="button" class="btn btn-primary">Maak een nieuw boek</a>
+
+
+<!-- pop up venster om zeker te zijn of je het boek wilt verwijderen -->
+@foreach (Book book in Model.Books)
+{
+    <div class="modal fade" id="delete-modal-@book.Id" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">@book.Title verwijderen?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Ben je zeker dat je @book.Title wilt verwijderen?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a asp-controller="Books" asp-action="Delete" asp-route-id="@book.Id" role="button" class="btn btn-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>}

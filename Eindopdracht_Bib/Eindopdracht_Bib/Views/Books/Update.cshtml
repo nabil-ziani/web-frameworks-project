@@ -1,0 +1,35 @@
+﻿@model BookUpdateViewModel
+<form method="post" asp-controller="Books" asp-action="Update">
+    <div class="form-group">
+        <label asp-for="ISBN"></label>
+        <input class="form-control" asp-for="ISBN">
+        <div class="invalid-feedback" style="display:block;">
+            <span asp-validation-for="ISBN"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input class="form-control" asp-for="Title">
+        <div class="invalid-feedback" style="display:block;">
+            <span asp-validation-for="Title"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Author"></label>
+        <input class="form-control" asp-for="Author">
+        <div class="invalid-feedback" style="display:block;">
+            <span asp-validation-for="Author"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <label asp-for="PublicationYear"></label>
+        <input class="form-control" asp-for="PublicationYear">
+        <div class="invalid-feedback" style="display:block;">
+            <span asp-validation-for="PublicationYear"></span>
+        </div>
+    </div>
+    <div class="form-group">
+        <select asp-for="Type" asp-items="Html.GetEnumSelectList<BookType>()"></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Aanpassen</button>
+</form>
