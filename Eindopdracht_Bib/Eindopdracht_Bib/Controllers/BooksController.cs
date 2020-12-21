@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Eindopdracht_Bib.Models;
 using Eindopdracht_Bib.ViewModels;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Eindopdracht_Bib.Controllers
 {
@@ -36,7 +38,23 @@ namespace Eindopdracht_Bib.Controllers
         public IActionResult Index([FromQuery] SortField sort = SortField.Type, [FromQuery] SortDirection sortDirection = SortDirection.ASC, [FromQuery] int page = 1)
         {
             // lijst van boeken ophalen
-            var books = this.bookRepository.GetAll(); 
+            var books = this.bookRepository.GetAll();
+
+            // alle favorieten ophalen 
+            Dictionary<int, Favorite> favorite = getBookFromSession();
+            List<Favorite> favoritesList = favorite.Values.ToList();
+
+            // juiste icoontje tonen
+            for (int i = 0; i < favoritesList.Count(); i++)
+            {
+                foreach (var book in books)
+                {
+                    if (favoritesList[i].Book.Id == book.Id)
+                    {
+                        book.AddedToFavorites = true;
+                    }
+                }
+            }
 
             switch (sort)
             {
@@ -138,7 +156,7 @@ namespace Eindopdracht_Bib.Controllers
                 return NotFound();
             }
         }
-
+        
         [HttpPost]
         public IActionResult Update(int id, BookUpdateViewModel bookUpdateViewModel)
         {
@@ -166,6 +184,15 @@ namespace Eindopdracht_Bib.Controllers
             {
                 return NotFound();
             }
+        }
+
+
+        // Methode om een boek uit een sessie te lezen.
+        private Dictionary<int, Favorite> getBookFromSession()
+        {
+            string sessionString = HttpContext.Session.GetString("favorite");
+            Dictionary<int, Favorite> favorite = sessionString != null ? JsonConvert.DeserializeObject<Dictionary<int, Favorite>>(HttpContext.Session.GetString("favorite")) : new Dictionary<int, Favorite>();
+            return favorite;
         }
     }
 }

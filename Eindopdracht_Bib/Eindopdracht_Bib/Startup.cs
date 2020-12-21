@@ -19,6 +19,10 @@ namespace Eindopdracht_Bib
         {
             services.AddControllersWithViews();
             services.AddSingleton<IBookRepository, BookInMemoryRepository>();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,6 +36,8 @@ namespace Eindopdracht_Bib
             app.UseRouting();
 
             app.UseStaticFiles();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

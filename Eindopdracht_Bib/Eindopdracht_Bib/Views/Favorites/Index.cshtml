@@ -1,4 +1,4 @@
-﻿@model BookListViewModel
+﻿@model FavoriteViewModel
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success" role="alert">
@@ -35,63 +35,54 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (Book book in Model.Books)
+        @foreach (Favorite favorite in Model.Favorites)
         {
             <tr>
-                <td>@book.ISBN</td>
-                <td>@book.Title</td>
-                <td>@book.Author</td>
-                <td>@book.PublicationYear</td>
-                <td>@book.Type</td>
+                <td>@favorite.Book.ISBN</td>
+                <td>@favorite.Book.Title</td>
+                <td>@favorite.Book.Author</td>
+                <td>@favorite.Book.PublicationYear</td>
+                <td>@favorite.Book.Type</td>
                 <td>
-                    <button type="button" data-toggle="modal" data-target="#delete-modal-@book.Id" class="btn btn-labeled btn-danger">
+                    <button type="button" data-toggle="modal" data-target="#delete-modal-@favorite.Book.Id" class="btn btn-labeled btn-danger">
                         <i class="fas fa-trash"></i>
                     </button>
-                    <a asp-action="Update" asp-controller="Books" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-primary">
+                    <a asp-action="Update" asp-controller="Books" asp-route-id="@favorite.Book.Id" role="button" class="btn btn-labeled btn-primary">
                         <i class="fas fa-edit"></i>
                     </a>
-                    @if (book.AddedToFavorites)
-                    {
-                        <a asp-action="Add" asp-controller="Favorites" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-primary">
-                            <span style="color: yellow;">
-                                <i class="fas fa-star"></i>
-                            </span>
-                        </a>
-                    }
-                    else
-                    {
-                        <a asp-action="Add" asp-controller="Favorites" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-primary">
-                            <i class="far fa-star"></i>
-                        </a>
-                    }
+                    <a asp-action="Add" asp-controller="Favorites" asp-route-id="@favorite.Book.Id" role="button" class="btn btn-labeled btn-primary">
+                        <span style="color: yellow;">
+                            <i class="fas fa-star"></i>
+                        </span>
+                    </a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 <a asp-controller="Books" asp-action="Create" role="button" class="btn btn-primary">Maak een nieuw boek</a>
-<a asp-controller="Favorites" asp-action="Index" role="button" class="btn btn-primary">Enkel favorieten tonen</a>
+<a asp-controller="Books" asp-action="Index" role="button" class="btn btn-primary">Toon alles</a>
 
 <!-- pop up venster om zeker te zijn of je het boek wilt verwijderen -->
-@foreach (Book book in Model.Books)
+@foreach (Favorite favorite in Model.Favorites)
 {
-    <div class="modal fade" id="delete-modal-@book.Id" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal fade" id="delete-modal-@favorite.Book.Id" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">@book.Title verwijderen?</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">@favorite.Book.Title verwijderen?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    Ben je zeker dat je @book.Title wilt verwijderen?
+                    Ben je zeker dat je @favorite.Book.Title wilt verwijderen?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a asp-controller="Books" asp-action="Delete" asp-route-id="@book.Id" role="button" class="btn btn-danger">Delete</a>
+                    <a asp-controller="Books" asp-action="Delete" asp-route-id="@favorite.Book.Id" role="button" class="btn btn-danger">Delete</a>
                 </div>
             </div>
         </div>
     </div>
- }
+}
