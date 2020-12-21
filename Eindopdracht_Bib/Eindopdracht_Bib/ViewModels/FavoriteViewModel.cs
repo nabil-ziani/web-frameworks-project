@@ -13,6 +13,6 @@ namespace Eindopdracht_Bib.ViewModels
         public SortField SortField { get; set; }
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
-        public List<Favorite> Favorites { get; set; }
+        public IEnumerable<Favorite> Favorites { get; set; }
     }
 }

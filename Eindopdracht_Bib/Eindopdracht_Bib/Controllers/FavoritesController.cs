@@ -12,6 +12,8 @@ namespace Eindopdracht_Bib.Controllers
 {
     public class FavoritesController : Controller
     {
+        public static int PAGE_SIZE = 5;
+
         private IBookRepository bookRepository;
         public FavoritesController(IBookRepository bookRepository)
         {
@@ -19,15 +21,41 @@ namespace Eindopdracht_Bib.Controllers
         }
 
         // ACTIONS
-        public IActionResult Index()
+        public IActionResult Index([FromQuery] SortField sort = SortField.Type, [FromQuery] SortDirection sortDirection = SortDirection.ASC, [FromQuery] int page = 1)
         {
             Dictionary<int, Favorite> favorite = getBookFromSession();
             List<Favorite> favoritesList = favorite.Values.ToList();
 
+            var allFavorites = favoritesList.AsQueryable();
+
+            switch (sort)
+            {
+                case SortField.ISBN:
+                    allFavorites = (sortDirection == SortDirection.ASC) ? allFavorites.OrderBy(b => b.Book.ISBN) : allFavorites.OrderByDescending(b => b.Book.ISBN);
+                    break;
+                case SortField.Title:
+                    allFavorites = (sortDirection == SortDirection.ASC) ? allFavorites.OrderBy(b => b.Book.Title) : allFavorites.OrderByDescending(b => b.Book.Title);
+                    break;
+                case SortField.Author:
+                    allFavorites = (sortDirection == SortDirection.ASC) ? allFavorites.OrderBy(b => b.Book.Author) : allFavorites.OrderByDescending(b => b.Book.Author);
+                    break;
+                case SortField.PublicationYear:
+                    allFavorites = (sortDirection == SortDirection.ASC) ? allFavorites.OrderBy(b => b.Book.PublicationYear) : allFavorites.OrderByDescending(b => b.Book.PublicationYear);
+                    break;
+                case SortField.Type:
+                    allFavorites = (sortDirection == SortDirection.ASC) ? allFavorites.OrderBy(b => b.Book.Type) : allFavorites.OrderByDescending(b => b.Book.Type);
+                    break;
+            }
+
             FavoriteViewModel favoriteViewModel = new FavoriteViewModel
             {
-                Favorites = favoritesList
+                SortDirection = sortDirection,
+                SortField = sort,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)allFavorites.Count() / PAGE_SIZE),
+                Favorites = allFavorites.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)
             };
+
             return View(favoriteViewModel);
         }
 
@@ -45,15 +73,8 @@ namespace Eindopdracht_Bib.Controllers
         // Methode om een boek in sessie op te slaan.
         private void saveBookToFavorites(Dictionary<int, Favorite> favorite)
         {
-            if (favorite.Count <= 5)
-            {
-                HttpContext.Session.SetString("favorite", JsonConvert.SerializeObject(favorite));
-            }
-            else
-            {
-                favorite.Remove(favorite.Keys.First());
-                HttpContext.Session.SetString("favorite", JsonConvert.SerializeObject(favorite));
-            }
+            // geen limiet
+            HttpContext.Session.SetString("favorite", JsonConvert.SerializeObject(favorite));
         }
         // Methode om een boek uit een sessie te lezen.
         private Dictionary<int, Favorite> getBookFromSession()
