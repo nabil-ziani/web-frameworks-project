@@ -23,8 +23,9 @@ namespace Eindopdracht_Bib.ViewModels
 
         [Range(1900, 2021, ErrorMessage = "Het jaar moet tussen 1900 en 2021 liggen")]
         [Display(Name = "Publicatie Jaar")]
+        [StringLength(4, ErrorMessage = "Je kan niet meer dan 4 getallen ingeven.")]
         [Required(ErrorMessage = "Je moet verplicht een publicatiejaar opgeven.")]
-        public int PublicationYear { get; set; }
+        public string PublicationYear { get; set; } // type string omdat validatie niet werkt bij type int, ik zet het terug om in de Action "Create"
 
         public BookType Type { get; set; }
     }

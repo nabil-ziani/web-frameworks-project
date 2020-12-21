@@ -118,7 +118,7 @@ namespace Eindopdracht_Bib.Controllers
                     ISBN = bookCreateViewModel.ISBN,
                     Title = bookCreateViewModel.Title,
                     Author = bookCreateViewModel.Author,
-                    PublicationYear = bookCreateViewModel.PublicationYear,
+                    PublicationYear = Convert.ToInt32(bookCreateViewModel.PublicationYear),
                     Type = bookCreateViewModel.Type
                 };
 
@@ -187,7 +187,7 @@ namespace Eindopdracht_Bib.Controllers
         }
 
 
-        // Methode om een boek uit een sessie te lezen.
+        // Methode voor favorieten op te halen
         private Dictionary<int, Favorite> getBookFromSession()
         {
             string sessionString = HttpContext.Session.GetString("favorite");
