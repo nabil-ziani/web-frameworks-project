@@ -42,7 +42,7 @@
                 <td>@favorite.Book.Title</td>
                 <td>@favorite.Book.Author</td>
                 <td>@favorite.Book.PublicationYear</td>
-                <td>@favorite.Book.Type</td>
+                <td>@Html.DisplayFor(m => favorite.Book.Type)</td>
                 <td>
                     <button type="button" data-toggle="modal" data-target="#delete-modal-@favorite.Book.Id" class="btn btn-labeled btn-danger">
                         <i class="fas fa-trash"></i>

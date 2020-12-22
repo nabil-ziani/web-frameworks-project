@@ -42,7 +42,7 @@
                 <td>@book.Title</td>
                 <td>@book.Author</td>
                 <td>@book.PublicationYear</td>
-                <td>@book.Type</td>
+                <td>@Html.DisplayFor(m => book.Type)</td>
                 <td>
                     <button type="button" data-toggle="modal" data-target="#delete-modal-@book.Id" class="btn btn-labeled btn-danger">
                         <i class="fas fa-trash"></i>
