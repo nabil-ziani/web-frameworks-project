@@ -18,7 +18,7 @@ namespace Eindopdracht_Bib.Models
         public string ISBN { get; set; }
         public string Title { get; set; }
         public string Author { get; set; }
-        public int PublicationYear { get; set; }
+        public int? PublicationYear { get; set; }
         public BookType Type { get; set; }
         public bool AddedToFavorites { get; set; } = false;
     }

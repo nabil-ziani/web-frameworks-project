@@ -118,7 +118,7 @@ namespace Eindopdracht_Bib.Controllers
                     ISBN = bookCreateViewModel.ISBN,
                     Title = bookCreateViewModel.Title,
                     Author = bookCreateViewModel.Author,
-                    PublicationYear = Convert.ToInt32(bookCreateViewModel.PublicationYear),
+                    PublicationYear = bookCreateViewModel.PublicationYear,
                     Type = bookCreateViewModel.Type
                 };
 

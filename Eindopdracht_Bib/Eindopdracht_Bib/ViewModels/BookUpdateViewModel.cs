@@ -24,7 +24,7 @@ namespace Eindopdracht_Bib.ViewModels
         [Range(1900, 2021, ErrorMessage = "Het jaar moet tussen 1900 en 2021 liggen")]
         [Display(Name = "Publicatie Jaar")]
         [Required(ErrorMessage = "Je moet verplicht een publicatiejaar opgeven.")]
-        public int PublicationYear { get; set; }
+        public int? PublicationYear { get; set; }
 
         public BookType Type { get; set; }
     }
