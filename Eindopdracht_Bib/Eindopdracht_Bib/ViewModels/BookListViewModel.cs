@@ -14,5 +14,6 @@ namespace Eindopdracht_Bib.ViewModels
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public IEnumerable<Book> Books { get; set; }
+        public bool Filter { get; set; }
     }
 }

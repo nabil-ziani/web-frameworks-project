@@ -10,7 +10,9 @@
 <ul class="pagination">
     @for (int i = 1; i < Model.TotalPages + 1; i++)
     {
-        <li class="page-item @(i == Model.CurrentPage ? "active" : "")"><a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-sort="@Model.SortField" asp-route-sortDirection="@Model.SortDirection">@i</a></li>
+        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-sort="@Model.SortField" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">@i</a>
+        </li>
     }
 </ul>
 
@@ -18,13 +20,13 @@
 <table class="table">
     <thead>
         <tr>
-            <th scope="col"><a asp-action="Index" asp-route-sort="ISBN" asp-route-sortDirection="@Model.SortDirection">ISBN Nummer</a></th>
-            <th scope="col"><a asp-action="Index" asp-route-sort="Title" asp-route-sortDirection="@Model.SortDirection">Titel</a></th>
-            <th scope="col"><a asp-action="Index" asp-route-sort="Author" asp-route-sortDirection="@Model.SortDirection">Auteur</a></th>
-            <th scope="col"><a asp-action="Index" asp-route-sort="PublicationYear" asp-route-sortDirection="@Model.SortDirection">Publicatie Jaar</a></th>
-            <th scope="col"><a asp-action="Index" asp-route-sort="Type" asp-route-sortDirection="@Model.SortDirection">Type</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="ISBN" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">ISBN Nummer</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Title" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">Titel</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Author" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">Auteur</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="PublicationYear" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">Publicatie Jaar</a></th>
+            <th scope="col"><a asp-action="Index" asp-route-sort="Type" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">Type</a></th>
             <th>
-                <form method="get" asp-action="Index" asp-route-sort="@Model.SortField">
+                <form method="get" asp-action="Index" asp-route-sort="@Model.SortField" asp-route-filter="@Model.Filter">
                     <select asp-for="@Model.SortDirection">
                         <option value="ASC">ASC</option>
                         <option value="DESC">DESC</option>
@@ -52,15 +54,16 @@
                     </a>
                     @if (book.AddedToFavorites)
                     {
-                        <a asp-action="Add" asp-controller="Favorites" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-primary">
+                        <a asp-action="Remove" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" role="button" class="btn btn-labeled btn-primary">
                             <span style="color: yellow;">
                                 <i class="fas fa-star"></i>
                             </span>
                         </a>
+                        book.AddedToFavorites = false;
                     }
                     else
                     {
-                        <a asp-action="Add" asp-controller="Favorites" asp-route-id="@book.Id" role="button" class="btn btn-labeled btn-secondary">
+                        <a asp-action="Add" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" role="button" class="btn btn-labeled btn-secondary">
                             <span style="color: white;">
                                 <i class="fas fa-star"></i>
                             </span>
@@ -72,7 +75,22 @@
     </tbody>
 </table>
 <a asp-controller="Books" asp-action="Create" role="button" class="btn btn-primary">Maak een nieuw boek</a>
-<a asp-controller="Favorites" asp-action="Index" role="button" class="btn btn-primary">Enkel favorieten tonen</a>
+
+<!-- Filter button -->
+@if (Model.Filter == false)
+{
+    <form method="GET" asp-controller="Books" asp-action="Index">
+        <input type="hidden" asp-for="Filter" name="Filter" value="true" />
+        <button type="submit" class="btn btn-primary">Enkel favorieten tonen</button>
+    </form>
+}
+else
+{
+    <form method="GET" asp-controller="Books" asp-action="Index">
+        <input type="hidden" asp-for="Filter" name="Filter" value="false" />
+        <button type="submit" class="btn btn-primary">Toon alles</button>
+    </form>
+}
 
 <!-- pop up venster om zeker te zijn of je het boek wilt verwijderen -->
 @foreach (Book book in Model.Books)
@@ -96,4 +114,4 @@
             </div>
         </div>
     </div>
- }
+}

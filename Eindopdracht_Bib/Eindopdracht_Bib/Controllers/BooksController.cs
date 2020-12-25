@@ -35,7 +35,7 @@ namespace Eindopdracht_Bib.Controllers
             this.bookRepository = bookRepository;
         }
 
-        public IActionResult Index([FromQuery] SortField sort = SortField.Type, [FromQuery] SortDirection sortDirection = SortDirection.ASC, [FromQuery] int page = 1)
+        public IActionResult Index([FromQuery] SortField sort = SortField.Type, [FromQuery] SortDirection sortDirection = SortDirection.ASC, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
             // lijst van boeken ophalen
             var books = this.bookRepository.GetAll();
@@ -75,6 +75,12 @@ namespace Eindopdracht_Bib.Controllers
                     break;
             }
 
+            // Filteren van de lijst voor enkel favorieten te tonen
+            if (filter != false)
+            {
+                books = books.Where(b => b.AddedToFavorites == true);
+            }
+
             // ViewModel aanmaken die we kunnen meesturen naar de pagina
             BookListViewModel bookListViewModel = new BookListViewModel
             {
@@ -82,7 +88,8 @@ namespace Eindopdracht_Bib.Controllers
                 SortField = sort,
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling((double)books.Count() / PAGE_SIZE),
-                Books = books.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE)
+                Books = books.Skip((page - 1) * PAGE_SIZE).Take(PAGE_SIZE),
+                Filter = filter
             };
 
             return View(bookListViewModel);
@@ -186,8 +193,41 @@ namespace Eindopdracht_Bib.Controllers
             }
         }
 
+        // Actions voor het toevoegen/verwijderen van favorieten
+        public IActionResult Add(int id)
+        {
+            Book book = this.bookRepository.Get(id);
 
-        // Methode voor favorieten op te halen
+            Dictionary<int, Favorite> favorites = getBookFromSession();
+            favorites[id] = favorites.GetValueOrDefault(id, new Favorite { Book = book, Amount = 0 });
+            favorites[id].Amount++;
+            saveBookToFavorites(favorites);
+
+            return RedirectToAction("Index", "Books", new { id });
+        }
+        public IActionResult Remove(int id)
+        {
+            Dictionary<int, Favorite> favorites = getBookFromSession();
+
+            favorites[id].Book.AddedToFavorites = false;
+            favorites[id].Amount--;
+            if (favorites[id].Amount == 0)
+            {
+                favorites.Remove(id); 
+            }
+
+            saveBookToFavorites(favorites);
+
+            return RedirectToAction("Index", "Books", new { id });
+        }
+
+        // Methode om een boek in sessie op te slaan.
+        private void saveBookToFavorites(Dictionary<int, Favorite> favorite)
+        {
+            // geen limiet
+            HttpContext.Session.SetString("favorite", JsonConvert.SerializeObject(favorite));
+        }
+        // Methode om een boek uit een sessie te lezen.
         private Dictionary<int, Favorite> getBookFromSession()
         {
             string sessionString = HttpContext.Session.GetString("favorite");

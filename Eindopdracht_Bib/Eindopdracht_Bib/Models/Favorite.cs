@@ -8,5 +8,6 @@ namespace Eindopdracht_Bib.Models
     public class Favorite
     {
         public Book Book { get; set; }
+        public int Amount { get; set; }
     }
 }
