@@ -40,22 +40,6 @@ namespace Eindopdracht_Bib.Controllers
             // lijst van boeken ophalen
             var books = this.bookRepository.GetAll();
 
-            // alle favorieten ophalen 
-            Dictionary<int, Favorite> favorite = getBookFromSession();
-            List<Favorite> favoritesList = favorite.Values.ToList();
-
-            // juiste icoontje tonen
-            for (int i = 0; i < favoritesList.Count(); i++)
-            {
-                foreach (var book in books)
-                {
-                    if (favoritesList[i].Book.Id == book.Id)
-                    {
-                        book.AddedToFavorites = true;
-                    }
-                }
-            }
-
             switch (sort)
             {
                 case SortField.ISBN:
@@ -193,33 +177,35 @@ namespace Eindopdracht_Bib.Controllers
             }
         }
 
-        // Actions voor het toevoegen/verwijderen van favorieten
-        public IActionResult Add(int id)
+        // Actions voor het toevoegen/verwijderen van favorieten.
+        public IActionResult Add(int id, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
+            // dit boek "markeren" als favoriet
             Book book = this.bookRepository.Get(id);
+            book.AddedToFavorites = true;
 
             Dictionary<int, Favorite> favorites = getBookFromSession();
-            favorites[id] = favorites.GetValueOrDefault(id, new Favorite { Book = book, Amount = 0 });
-            favorites[id].Amount++;
+            favorites[id] = favorites.GetValueOrDefault(id, new Favorite { Book = book});
             saveBookToFavorites(favorites);
 
-            return RedirectToAction("Index", "Books", new { id });
+            return RedirectToAction("Index", "Books", new { page, filter });
         }
-        public IActionResult Remove(int id)
+        public IActionResult Remove(int id, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
+            // aangeven dat dit boek geen favoriet meer is
+            Book book = this.bookRepository.Get(id);
+            book.AddedToFavorites = false;
+
+            // favorieten-lijst ophalen, juiste verwijderen en nieuwe lijst opslaan.
             Dictionary<int, Favorite> favorites = getBookFromSession();
-
-            favorites[id].Book.AddedToFavorites = false;
-            favorites[id].Amount--;
-            if (favorites[id].Amount == 0)
-            {
-                favorites.Remove(id); 
-            }
-
+            
+            favorites.Remove(id); 
+            
             saveBookToFavorites(favorites);
 
-            return RedirectToAction("Index", "Books", new { id });
+            return RedirectToAction("Index", "Books", new { page, filter });
         }
+
 
         // Methode om een boek in sessie op te slaan.
         private void saveBookToFavorites(Dictionary<int, Favorite> favorite)

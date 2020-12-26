@@ -54,16 +54,15 @@
                     </a>
                     @if (book.AddedToFavorites)
                     {
-                        <a asp-action="Remove" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" role="button" class="btn btn-labeled btn-primary">
+                        <a asp-action="Remove" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" asp-route-filter="@Model.Filter" role="button" class="btn btn-labeled btn-primary">
                             <span style="color: yellow;">
                                 <i class="fas fa-star"></i>
                             </span>
                         </a>
-                        book.AddedToFavorites = false;
                     }
                     else
                     {
-                        <a asp-action="Add" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" role="button" class="btn btn-labeled btn-secondary">
+                        <a asp-action="Add" asp-route-id="@book.Id" asp-route-page="@Model.CurrentPage" asp-route-filter="@Model.Filter" role="button" class="btn btn-labeled btn-secondary">
                             <span style="color: white;">
                                 <i class="fas fa-star"></i>
                             </span>
@@ -79,14 +78,14 @@
 <!-- Filter button -->
 @if (Model.Filter == false)
 {
-    <form method="GET" asp-controller="Books" asp-action="Index">
+    <form method="GET" asp-action="Index">
         <input type="hidden" asp-for="Filter" name="Filter" value="true" />
         <button type="submit" class="btn btn-primary">Enkel favorieten tonen</button>
     </form>
 }
 else
 {
-    <form method="GET" asp-controller="Books" asp-action="Index">
+    <form method="GET" asp-action="Index">
         <input type="hidden" asp-for="Filter" name="Filter" value="false" />
         <button type="submit" class="btn btn-primary">Toon alles</button>
     </form>
