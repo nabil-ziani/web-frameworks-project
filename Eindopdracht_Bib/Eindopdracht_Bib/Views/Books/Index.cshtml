@@ -17,7 +17,7 @@
 </ul>
 
 <!-- Table with all books -->
-<table class="table">
+<table class="table" style="border-collapse: separate; border-spacing: 0 1em; ">
     <thead>
         <tr>
             <th scope="col"><a asp-action="Index" asp-route-sort="ISBN" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">ISBN Nummer</a></th>
@@ -27,6 +27,8 @@
             <th scope="col"><a asp-action="Index" asp-route-sort="Type" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">Type</a></th>
             <th>
                 <form method="get" asp-action="Index" asp-route-sort="@Model.SortField" asp-route-filter="@Model.Filter">
+                    <!-- de filter dient mee gegeven te worden zodat we weten of we op de gefilterde pagina zitten -->
+                    <input type="hidden" asp-for="Filter" name="Filter" value="@Model.Filter" />
                     <select asp-for="@Model.SortDirection">
                         <option value="ASC">ASC</option>
                         <option value="DESC">DESC</option>
@@ -76,20 +78,22 @@
 <a asp-controller="Books" asp-action="Create" role="button" class="btn btn-primary">Maak een nieuw boek</a>
 
 <!-- Filter button -->
-@if (Model.Filter == false)
-{
-    <form method="GET" asp-action="Index">
-        <input type="hidden" asp-for="Filter" name="Filter" value="true" />
-        <button type="submit" class="btn btn-primary">Enkel favorieten tonen</button>
-    </form>
-}
-else
-{
-    <form method="GET" asp-action="Index">
-        <input type="hidden" asp-for="Filter" name="Filter" value="false" />
-        <button type="submit" class="btn btn-primary">Toon alles</button>
-    </form>
-}
+<div class="d-inline-flex">
+    @if (Model.Filter == false)
+    {
+        <form method="GET" asp-action="Index">
+            <input type="hidden" asp-for="Filter" name="Filter" value="true" />
+            <button type="submit" class="btn btn-primary">Enkel favorieten tonen</button>
+        </form>
+    }
+    else
+    {
+        <form method="GET" asp-action="Index">
+            <input type="hidden" asp-for="Filter" name="Filter" value="false" />
+            <button type="submit" class="btn btn-primary">Toon alles</button>
+        </form>
+    }
+</div>
 
 <!-- pop up venster om zeker te zijn of je het boek wilt verwijderen -->
 @foreach (Book book in Model.Books)
