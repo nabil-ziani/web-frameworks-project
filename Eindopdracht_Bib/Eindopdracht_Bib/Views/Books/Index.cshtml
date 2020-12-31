@@ -17,7 +17,7 @@
 </ul>
 
 <!-- Table with all books -->
-<table class="table" style="border-collapse: separate; border-spacing: 0 1em; ">
+<table class="table">
     <thead>
         <tr>
             <th scope="col"><a asp-action="Index" asp-route-sort="ISBN" asp-route-sortDirection="@Model.SortDirection" asp-route-filter="@Model.Filter">ISBN Nummer</a></th>
@@ -41,7 +41,7 @@
     <tbody>
         @foreach (Book book in Model.Books)
         {
-            <tr>
+            <tr style="height: 75px;">
                 <td>@book.ISBN</td>
                 <td>@book.Title</td>
                 <td>@book.Author</td>
