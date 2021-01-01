@@ -37,8 +37,12 @@ namespace Eindopdracht_Bib.Controllers
 
         public IActionResult Index([FromQuery] SortField sort = SortField.Type, [FromQuery] SortDirection sortDirection = SortDirection.ASC, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
-            // lijst van boeken ophalen
+            // lijst van boeken ophalen + "resetten" van favorieten 
             var books = this.bookRepository.GetAll();
+            foreach (var book in books)
+            {
+                book.AddedToFavorites = false; 
+            }
 
             switch (sort)
             {
@@ -57,6 +61,19 @@ namespace Eindopdracht_Bib.Controllers
                 case SortField.Type:
                     books = (sortDirection == SortDirection.ASC) ? books.OrderBy(b => b.Type) : books.OrderByDescending(b => b.Type);
                     break;
+            }
+
+            // Lijst van favorieten ophalen en afhankelijk daarvan de property "AddedToFavorites" aanpassen
+            var favorites = GetBookFromSession();
+            foreach (var favorite in favorites)
+            {
+                foreach (var book in books)
+                {
+                    if (book.Id == favorite.Value.Id)
+                    {
+                        book.AddedToFavorites = true;
+                    }
+                }
             }
 
             // Filteren van de lijst voor enkel favorieten te tonen
@@ -180,44 +197,42 @@ namespace Eindopdracht_Bib.Controllers
         // Actions voor het toevoegen/verwijderen van favorieten.
         public IActionResult Add(int id, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
-            // dit boek "markeren" als favoriet
             Book book = this.bookRepository.Get(id);
-            book.AddedToFavorites = true;
 
-            Dictionary<int, Favorite> favorites = getBookFromSession();
-            favorites[id] = favorites.GetValueOrDefault(id, new Favorite { Book = book});
-            saveBookToFavorites(favorites);
+            Dictionary<int, Book> favorites = GetBookFromSession();
+            favorites[id] = favorites.GetValueOrDefault(id, book);
+            SaveBookToSession(favorites);
 
             return RedirectToAction("Index", "Books", new { page, filter });
         }
         public IActionResult Remove(int id, [FromQuery] int page = 1, [FromQuery] bool filter = false)
         {
-            // aangeven dat dit boek geen favoriet meer is
-            Book book = this.bookRepository.Get(id);
-            book.AddedToFavorites = false;
+            // aangeven dat dit boek geen favoriet meer is.
+            //Book book = this.bookRepository.Get(id);
+            //book.AddedToFavorites = false;
 
             // favorieten-lijst ophalen, juiste verwijderen en nieuwe lijst opslaan.
-            Dictionary<int, Favorite> favorites = getBookFromSession();
+            Dictionary<int, Book> favorites = GetBookFromSession();
             
             favorites.Remove(id); 
             
-            saveBookToFavorites(favorites);
+            SaveBookToSession(favorites);
 
             return RedirectToAction("Index", "Books", new { page, filter });
         }
 
 
         // Methode om een boek in sessie op te slaan.
-        private void saveBookToFavorites(Dictionary<int, Favorite> favorite)
+        private void SaveBookToSession(Dictionary<int, Book> favorite)
         {
             // geen limiet
             HttpContext.Session.SetString("favorite", JsonConvert.SerializeObject(favorite));
         }
         // Methode om een boek uit een sessie te lezen.
-        private Dictionary<int, Favorite> getBookFromSession()
+        private Dictionary<int, Book> GetBookFromSession()
         {
             string sessionString = HttpContext.Session.GetString("favorite");
-            Dictionary<int, Favorite> favorite = sessionString != null ? JsonConvert.DeserializeObject<Dictionary<int, Favorite>>(HttpContext.Session.GetString("favorite")) : new Dictionary<int, Favorite>();
+            Dictionary<int, Book> favorite = sessionString != null ? JsonConvert.DeserializeObject<Dictionary<int, Book>>(HttpContext.Session.GetString("favorite")) : new Dictionary<int, Book>();
             return favorite;
         }
     }
